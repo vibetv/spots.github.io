@@ -1,28 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-    loadMatches();
-});
-const matchData = {
-    "matches": [{
-            "team1": "Barcelona",
-            "team2": "Real Madrid",
-            "time": "2024-10-21T21:40:00",
-            "link": "https://example.com/stream1"
-        },
-        {
-            "team1": "Manchester United",
-            "team2": "Liverpool",
-            "time": "2024-10-22T23:00:00",
-            "link": "https://example.com/stream2"
-        },
-        {
-            "team1": "PSG",
-            "team2": "Bayern Munich",
-            "time": "2024-10-23T01:00:00",
-            "link": "https://example.com/stream3"
-        }
-    ]
-};
-
 function loadMatches() {
     const matchList = document.getElementById('matchList');
 
