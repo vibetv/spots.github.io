@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', loadMatches);
-
 function loadMatches() {
   const matchList = document.getElementById('matchList');
 
