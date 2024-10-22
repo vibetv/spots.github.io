@@ -74,7 +74,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             animation: spin 1s linear infinite;
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         @keyframes spin {
@@ -161,14 +161,27 @@
                 return params.get(name);
             }
 
-            // Get the embed parameter and split into an array if available
+            // Decode Base64 encoded string
+            function decodeBase64(encoded) {
+                try {
+                    return atob(encoded);
+                } catch (e) {
+                    console.error("Invalid Base64 string", e);
+                    return null;
+                }
+            }
+
+            // Get the embed parameter and split into an array if available (Base64 encoded)
             const embedParam = getParameterByName('embed');
             let embedURLs = [];
             if (embedParam) {
-                embedURLs = embedParam.split(',');  // Split by comma
+                const decodedEmbed = decodeBase64(embedParam);  // Decode the Base64
+                if (decodedEmbed) {
+                    embedURLs = decodedEmbed.split(',');  // Split by comma
+                }
             }
 
-            // Assign the embed URLs to server options if available
+            // Assign the decoded embed URLs to server options if available
             serverOptions.forEach((option, index) => {
                 if (embedURLs[index]) {
                     option.dataset.embed = embedURLs[index];
