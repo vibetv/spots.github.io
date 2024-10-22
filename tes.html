@@ -1,0 +1,201 @@
+<html>
+<head>
+    <style>
+        :root {
+            --primary: #000000;
+            --gray-dark: #444444;
+        }
+
+        .DagTo {
+            margin-bottom: 8px;
+            width: 100%;
+            background: var(--gray-dark);
+            border-radius: 2px;
+            padding-bottom: 0;
+        }
+
+        .DagPlaArea {
+            width: 100%;
+            transition: width .2s;
+            position: relative;
+            padding: 0;
+            overflow: hidden;
+            line-height: 20px;
+            border-bottom-right-radius: .3rem;
+            border-bottom-left-radius: .3rem;
+        }
+
+        #server ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #server ul li {
+            display: inline-block;
+        }
+
+        .DagPlayOpt {
+            padding: 5px 10px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            background: #ff4500;
+            border-radius: 3px;
+            margin: 0 5px 10px;
+        }
+
+        .DagPlayOpt.on {
+            color: #fff;
+            background: var(--primary);
+        }
+
+        .video-content {
+            background: #000;
+            overflow: hidden;
+        }
+
+        #pembed {
+            max-width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            position: relative;
+        }
+
+        .playerload {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 10px solid transparent;
+            border-top-color: #ff4500;
+            border-bottom-color: #ff4500;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        iframe {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border: none;
+        }
+
+        .telegram-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #0088cc;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .telegram-button:hover {
+            background-color: #005f8c;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="DagPlaArea DagTo">
+        <div id="PlayVideo" class="video-content">
+            <div id="embed_holder">
+                <div class="player-embed" id="pembed">
+                    <div class="playerload"></div>
+                    <div class="pframe">
+                        <iframe src="" frameborder="0" title="Video Player" allow="encrypted-media; autoplay; picture-in-picture; fullscreen" referrerpolicy="no-referrer"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <center>
+        <div id="server">
+            <ul>
+                <li>
+                    <div class="DagPlayOpt" data-embed="">
+                        <span>Server 1</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="DagPlayOpt" data-embed="">
+                        <span>Server 2</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="DagPlayOpt" data-embed="">
+                        <span>Server 3</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <a href="https://t.me/pecintaminton" class="telegram-button">Join our Telegram Group</a>
+    </center>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const serverOptions = document.querySelectorAll(".DagPlayOpt");
+            const iframe = document.querySelector("#pembed iframe");
+            const playerLoad = document.querySelector(".playerload");
+
+            // Function to get URL parameters
+            function getParameterByName(name) {
+                const params = new URLSearchParams(window.location.search);
+                return params.get(name);
+            }
+
+            // Get the embed parameter and split into an array if available
+            const embedParam = getParameterByName('embed');
+            let embedURLs = [];
+            if (embedParam) {
+                embedURLs = embedParam.split(',');  // Split by comma
+            }
+
+            // Assign the embed URLs to server options if available
+            serverOptions.forEach((option, index) => {
+                if (embedURLs[index]) {
+                    option.dataset.embed = embedURLs[index];
+                }
+            });
+
+            // Add click event to each server option
+            serverOptions.forEach(option => {
+                option.addEventListener("click", function() {
+                    const embedURL = option.dataset.embed;
+                    playerLoad.style.display = "block";  // Show loading animation
+                    iframe.src = embedURL;
+
+                    iframe.onload = function() {
+                        playerLoad.style.display = "none";  // Hide loading animation when iframe loads
+                    };
+
+                    serverOptions.forEach(opt => opt.classList.remove("on"));
+                    option.classList.add("on");
+                });
+            });
+
+            // Trigger click on the first server option
+            if (embedURLs.length > 0) {
+                serverOptions[0].click();
+            }
+        });
+    </script>
+</body>
+</html>
