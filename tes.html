@@ -53,13 +53,19 @@
         .video-content {
             background: #000;
             overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
         }
 
+        /* Responsif Iframe untuk Video */
         #pembed {
-            max-width: 100%;
-            height: 0;
-            padding-bottom: 56.25%;
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .playerload {
@@ -74,7 +80,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             animation: spin 1s linear infinite;
-            display: none;
+            display: none; /* Hidden by default */
         }
 
         @keyframes spin {
@@ -111,6 +117,17 @@
             background-color: #005f8c;
         }
 
+        /* Fullscreen button style */
+        .fullscreen-btn {
+            margin-top: 10px;
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -146,6 +163,7 @@
                 </li>
             </ul>
         </div>
+        <button class="fullscreen-btn" id="fullscreenBtn">Full Screen</button>
         <a href="https://t.me/pecintaminton" class="telegram-button">Join our Telegram Group</a>
     </center>
 
@@ -154,6 +172,7 @@
             const serverOptions = document.querySelectorAll(".DagPlayOpt");
             const iframe = document.querySelector("#pembed iframe");
             const playerLoad = document.querySelector(".playerload");
+            const fullscreenBtn = document.getElementById("fullscreenBtn");
 
             // Function to get URL parameters
             function getParameterByName(name) {
@@ -208,6 +227,20 @@
             if (embedURLs.length > 0) {
                 serverOptions[0].click();
             }
+
+            // Fullscreen functionality
+            fullscreenBtn.addEventListener("click", function() {
+                const videoContainer = document.getElementById("PlayVideo");
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.mozRequestFullScreen) { // Firefox
+                    videoContainer.mozRequestFullScreen();
+                } else if (videoContainer.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    videoContainer.webkitRequestFullscreen();
+                } else if (videoContainer.msRequestFullscreen) { // IE/Edge
+                    videoContainer.msRequestFullscreen();
+                }
+            });
         });
     </script>
 </body>
