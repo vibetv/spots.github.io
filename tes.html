@@ -118,7 +118,7 @@
         }
 
         /* Fullscreen button style */
-        .fullscreen-btn {
+        .fullscreen-btn, .exit-fullscreen-btn {
             margin-top: 10px;
             background-color: #000;
             color: #fff;
@@ -127,6 +127,10 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
+        }
+
+        .exit-fullscreen-btn {
+            display: none; /* Hidden by default */
         }
     </style>
 </head>
@@ -164,6 +168,7 @@
             </ul>
         </div>
         <button class="fullscreen-btn" id="fullscreenBtn">Full Screen</button>
+        <button class="exit-fullscreen-btn" id="exitFullscreenBtn">Exit Full Screen</button>
         <a href="https://t.me/pecintaminton" class="telegram-button">Join our Telegram Group</a>
     </center>
 
@@ -173,6 +178,7 @@
             const iframe = document.querySelector("#pembed iframe");
             const playerLoad = document.querySelector(".playerload");
             const fullscreenBtn = document.getElementById("fullscreenBtn");
+            const exitFullscreenBtn = document.getElementById("exitFullscreenBtn");
 
             // Function to get URL parameters
             function getParameterByName(name) {
@@ -241,6 +247,36 @@
                     videoContainer.msRequestFullscreen();
                 }
             });
+
+            // Exit fullscreen functionality
+            exitFullscreenBtn.addEventListener("click", function() {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+            });
+
+            // Listen for fullscreen change event
+            document.addEventListener("fullscreenchange", toggleFullscreenButtons);
+            document.addEventListener("webkitfullscreenchange", toggleFullscreenButtons);
+            document.addEventListener("mozfullscreenchange", toggleFullscreenButtons);
+            document.addEventListener("MSFullscreenChange", toggleFullscreenButtons);
+
+            // Toggle fullscreen buttons
+            function toggleFullscreenButtons() {
+                if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                    fullscreenBtn.style.display = "none";
+                    exitFullscreenBtn.style.display = "inline-block";
+                } else {
+                    fullscreenBtn.style.display = "inline-block";
+                    exitFullscreenBtn.style.display = "none";
+                }
+            }
         });
     </script>
 </body>
