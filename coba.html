@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Import Shaka Player UI build -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.11.9/shaka-player.ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.11.9/controls.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        video {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            opacity: 0.7;
+            z-index: 10;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 5px 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="youtube-theme">
+        <div data-shaka-player-container="" shaka-controls="true" class="shaka-video-container" style="cursor: none;">
+            <video autoplay="true" muted="true" data-shaka-player="" poster=" " id="youtube-theme" class="shaka-video"></video>
+        </div>
+    </div>
+
+    <!-- Watermark -->
+    <div class="watermark">hostspotku.blogspot.com</div>
+
+    <script type="text/javascript">
+        // DASH dan HLS URLs
+        const dash_manifestUri = 'https://example.com/path/to/your/dash/manifest.mpd'; // Ubah ini ke URL DASH yang valid
+        const hls_manifestUri = 'https://example.com/path/to/your/hls/playlist.m3u8'; // Ubah ini ke URL HLS yang valid
+
+        // Fungsi untuk mengambil parameter dari URL
+        function getParameterByName(name) {
+            const url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+            const results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        async function init() {
+            const video = document.getElementById('youtube-theme');
+            const ui = video['ui'];
+            const config = {
+                'seekBarColors': {
+                    base: 'rgba(255,255,255,.2)',
+                    buffered: 'rgba(255,255,255,.4)',
+                    played: 'rgb(255,0,0)',
+                }
+            };
+            ui.configure(config);
+
+            const controls = ui.getControls();
+            const player = controls.getPlayer();
+            player.configure({
+                drm: {
+                    clearKeys: {
+                        'e60ece8f0d9042fcb52508055ec48e5e': '213f438bd4961cda987d41b7f154f1e5',
+                    }
+                },
+                preferredTextLanguage: 'en'
+            });
+
+            window.player = player;
+            window.ui = ui;
+
+            player.addEventListener('error', onPlayerErrorEvent);
+            controls.addEventListener('error', onUIErrorEvent);
+
+            // Ambil parameter 'type' dari URL untuk menentukan DASH atau HLS
+            const streamType = getParameterByName('type'); // Misal: ?type=dash atau ?type=hls
+            let manifestUri = '';
+
+            if (streamType === 'dash') {
+                manifestUri = dash_manifestUri;
+                console.log("Selected DASH manifest.");
+            } else if (streamType === 'hls') {
+                manifestUri = hls_manifestUri;
+                console.log("Selected HLS manifest.");
+            } else {
+                // Default ke DASH jika tidak ada parameter yang cocok
+                manifestUri = dash_manifestUri;
+                console.log("No type specified, defaulting to DASH.");
+            }
+
+            try {
+                await player.load(manifestUri);
+                setPreferredSubtitle();
+            } catch (error) {
+                console.error('Failed to load the manifest:', error);
+                alert('Failed to load the selected stream type!');
+            }
+
+            function setPreferredSubtitle() {
+                const tracks = player.getTextTracks();
+                if (tracks.length > 0) {
+                    const preferredTrack = tracks.find(track => track.language === 'en');
+                    if (preferredTrack) {
+                        player.selectTextTrack(preferredTrack);
+                        player.setTextTrackVisibility(true);
+                    }
+                }
+            }
+
+            function onPlayerErrorEvent(errorEvent) {
+                onPlayerError(errorEvent.detail);
+            }
+
+            function onPlayerError(error) {
+                console.error('Error code', error.code, 'object', error);
+            }
+
+            function onUIErrorEvent(errorEvent) {
+                onPlayerError(errorEvent.detail);
+            }
+
+            function initFailed(errorEvent) {
+                console.error('Unable to load the UI library!');
+            }
+
+            document.querySelector('.shaka-overflow-menu-button').textContent = 'settings';
+            document.querySelector('.shaka-back-to-overflow-button .material-icons-round').textContent = 'arrow_back_ios_new';
+        }
+
+        document.addEventListener('shaka-ui-loaded', init);
+        document.addEventListener('shaka-ui-load-failed', initFailed);
+    </script>
+
+</body>
+
+</html>
