@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta content="never" name="referrer">
     <!-- Import Shaka Player UI build -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.11.9/shaka-player.ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.11.9/controls.min.css">
@@ -33,13 +34,17 @@
             background-color: rgba(0, 0, 0, 0.5);
             border-radius: 5px;
         }
+
+        .youtube-theme {
+            cursor: none;
+        }
     </style>
 </head>
 
 <body>
     <div class="youtube-theme">
-        <div data-shaka-player-container="" shaka-controls="true" class="shaka-video-container" style="cursor: none;">
-            <video autoplay="true" muted="true" data-shaka-player="" poster=" " id="youtube-theme" class="shaka-video"></video>
+        <div data-shaka-player-container shaka-controls="true" class="shaka-video-container">
+            <video autoplay muted data-shaka-player poster=" " id="youtube-theme" class="shaka-video"></video>
         </div>
     </div>
 
@@ -47,20 +52,14 @@
     <div class="watermark">hostspotku.blogspot.com</div>
 
     <script type="text/javascript">
-        // DASH dan HLS URLs
-        const dash_manifestUri = 'https://example.com/path/to/your/dash/manifest.mpd'; // Ubah ini ke URL DASH yang valid
-        const hls_manifestUri = 'https://example.com/path/to/your/hls/playlist.m3u8'; // Ubah ini ke URL HLS yang valid
-
-        // Fungsi untuk mengambil parameter dari URL
+        // Fungsi untuk mengambil parameter URL
         function getParameterByName(name) {
-            const url = window.location.href;
-            name = name.replace(/[\[\]]/g, '\\$&');
-            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-            const results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
         }
+
+        // Mendapatkan URL M3U8 dari parameter 'm3u8' atau gunakan URL default
+        const hls_manifestUri = getParameterByName('m3u8') || 'YOUR_DEFAULT_M3U8_URL';
 
         async function init() {
             const video = document.getElementById('youtube-theme');
@@ -91,28 +90,11 @@
             player.addEventListener('error', onPlayerErrorEvent);
             controls.addEventListener('error', onUIErrorEvent);
 
-            // Ambil parameter 'type' dari URL untuk menentukan DASH atau HLS
-            const streamType = getParameterByName('type'); // Misal: ?type=dash atau ?type=hls
-            let manifestUri = '';
-
-            if (streamType === 'dash') {
-                manifestUri = dash_manifestUri;
-                console.log("Selected DASH manifest.");
-            } else if (streamType === 'hls') {
-                manifestUri = hls_manifestUri;
-                console.log("Selected HLS manifest.");
-            } else {
-                // Default ke DASH jika tidak ada parameter yang cocok
-                manifestUri = dash_manifestUri;
-                console.log("No type specified, defaulting to DASH.");
-            }
-
             try {
-                await player.load(manifestUri);
+                await player.load(hls_manifestUri);
                 setPreferredSubtitle();
             } catch (error) {
-                console.error('Failed to load the manifest:', error);
-                alert('Failed to load the selected stream type!');
+                onPlayerError(error);
             }
 
             function setPreferredSubtitle() {
@@ -137,17 +119,14 @@
             function onUIErrorEvent(errorEvent) {
                 onPlayerError(errorEvent.detail);
             }
+        }
 
-            function initFailed(errorEvent) {
-                console.error('Unable to load the UI library!');
-            }
-
-            document.querySelector('.shaka-overflow-menu-button').textContent = 'settings';
-            document.querySelector('.shaka-back-to-overflow-button .material-icons-round').textContent = 'arrow_back_ios_new';
+        function onUILoadFailed(errorEvent) {
+            console.error('Unable to load the UI library!');
         }
 
         document.addEventListener('shaka-ui-loaded', init);
-        document.addEventListener('shaka-ui-load-failed', initFailed);
+        document.addEventListener('shaka-ui-load-failed', onUILoadFailed);
     </script>
 
 </body>
