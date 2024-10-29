@@ -1,0 +1,113 @@
+body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .filter-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .filter-container label, .filter-container input {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .filter-container input {
+            width: 200px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+            cursor: pointer;
+        }
+        th:hover {
+            background-color: #e9e9e9;
+        }
+        .match-cell {
+            color: #007bff;
+            cursor: pointer;
+        }
+        .match-cell:hover {
+            text-decoration: underline;
+        }
+        .match-cell a {
+            display: none;
+        }
+        #no-matches {
+            display: none;
+            text-align: center;
+            color: red;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .adsense-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        @media (max-width: 600px) {
+            th, td {
+                font-size: 14px;
+                padding: 8px;
+            }
+            h1 {
+                font-size: 18px;
+            }
+            .filter-container input {
+                width: 150px;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .fade-out {
+            animation: fadeOut 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
